@@ -1,21 +1,44 @@
 #include <iostream>
-#include <string>
-#include <algorithm>
+#include <fstream>
+#include <vector>
+using namespace std;
 
-int K = 7;  //number of characters on a line
-int N = 10; //number of words
-std::string essay = "Bessie is tasty"; // Bessie's essay
+int main() {
+    ifstream fin("word.in");
+    ofstream fout("word.out");
 
-int main(){
-  //std::cout << "Please print your essay: ";
-  //std::cin >> essay;
+    int N, K;
+    fin >> N >> K;
 
-  std::size_t total_chars = essay.size();
-  auto space_count = std::count(essay.begin(), essay.end(), ' ');
-  std::size_t chars_without_spaces = total_chars - space_count;
-  
-  std::cout << "Characters without spaces: " << chars_without_spaces << "\n";
-  std::cout << space_count;
+    vector<string> words(N);
+    for (int i = 0; i < N; i++) {
+        fin >> words[i];
+    }
 
-  return 0;
+    int current_line_length = 0;
+
+    for (int i = 0; i < N; i++) {
+        int word_len = words[i].length();
+
+        // If this is the first word on the line, or it fits with a space
+        if (current_line_length == 0) {
+            // Start the line with this word
+            fout << words[i];
+            current_line_length = word_len;
+        } else if (current_line_length + 1 + word_len <= K) {
+            // Add a space and the word
+            fout << " " << words[i];
+            current_line_length += 1 + word_len;
+        } else {
+            // Can't fit: start a new line
+            fout << "\n" << words[i];
+            current_line_length = word_len;
+        }
+    }
+
+    fout << "\n";
+
+    fin.close();
+    fout.close();
+    return 0;
 }
